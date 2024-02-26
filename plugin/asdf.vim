@@ -44,16 +44,7 @@ endif
 
 function! s:set_paths() abort
   call extend(g:ruby_version_paths, s:ruby_version_paths(), 'keep')
-  if !empty($ASDF_RUBY_VERSION)
-    let ver = $ASDF_RUBY_VERSION
-  else
-    let stdout = system('asdf current ruby')
-    if !empty(stdout) && v:shell_error == 0
-      let ver = matchstr(stdout, '\v\d+\.\d+\.\d+')
-    else
-      return
-    endif
-  endif
+  let ver = s:ruby_version('~')
   if has_key(g:ruby_version_paths, ver)
     let g:ruby_default_path = g:ruby_version_paths[ver]
   else
@@ -61,6 +52,27 @@ function! s:set_paths() abort
   endif
 endfunction
 
+function! s:ruby_version(dir)
+  let dir = fnamemodify(a:dir, ':p')
+  if !empty($ASDF_RUBY_VERSION)
+    let ver = $ASDF_RUBY_VERSION
+  else
+    let stdout = system('cd ' . dir .' && asdf current ruby')
+    if !empty(stdout) && v:shell_error == 0
+      let ver = matchstr(stdout, '\v\d+\.\d+\.\d+')
+    else
+      return
+    endif
+  endif
+
+  return ver
+endfunction
+
 call s:set_paths()
 
+augroup asdf-vim
+  autocmd!
+  
+  autocmd FileType ruby let b:ruby_version = get(b:, 'ruby_version', s:ruby_version(expand('<afile>:p:h')))
+augroup END
 " vim:set et sw=2:
