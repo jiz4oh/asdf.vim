@@ -5,6 +5,7 @@ installs are located, so that it can set `'path'` and [`'tags'`][rbenv-ctags]
 in your Ruby buffers to reflect the nearest `.tool-version` or `.ruby-version` or file.
 
 [vim-ruby]: https://github.com/vim-ruby/vim-ruby
+[rbenv-ctags]: https://github.com/tpope/rbenv-ctags
 
 ## Installation
 
