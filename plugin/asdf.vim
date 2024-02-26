@@ -46,10 +46,13 @@ function! s:set_paths() abort
   call extend(g:ruby_version_paths, s:ruby_version_paths(), 'keep')
   if !empty($ASDF_RUBY_VERSION)
     let ver = $ASDF_RUBY_VERSION
-  elseif !empty(system('asdf current ruby')) && v:shell_error == 0
-    let ver = matchstr(system('asdf current ruby'), '\v\d+\.\d+\.\d+')
   else
-    return
+    let stdout = system('asdf current ruby')
+    if !empty(stdout) && v:shell_error == 0
+      let ver = matchstr(stdout, '\v\d+\.\d+\.\d+')
+    else
+      return
+    endif
   endif
   if has_key(g:ruby_version_paths, ver)
     let g:ruby_default_path = g:ruby_version_paths[ver]
