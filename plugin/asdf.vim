@@ -47,7 +47,12 @@ function! s:set_paths() abort
   let ver = $ASDF_RUBY_VERSION
 
   if empty(ver)
-    for line in readfile(fnamemodify('~/.tool-versions', ':p'))
+    if empty($ASDF_DEFAULT_TOOL_VERSIONS_FILENAME)
+      let file_name = '.tool-versions'
+    else
+      let file_name = $ASDF_DEFAULT_TOOL_VERSIONS_FILENAME
+    end
+    for line in readfile(fnamemodify('~/' . file_name, ':p'))
       if line =~# 'ruby'
         let ver = matchstr(line, '\v\d+\.\d+\.\d+')
         break
