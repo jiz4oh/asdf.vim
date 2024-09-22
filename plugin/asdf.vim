@@ -44,13 +44,21 @@ endif
 
 function! s:set_paths() abort
   call extend(g:ruby_version_paths, s:ruby_version_paths(), 'keep')
-  if !empty($ASDF_RUBY_VERSION)
-    let ver = $ASDF_RUBY_VERSION
-  elseif !empty(system('asdf current ruby')) && v:shell_error == 0
-    let ver = matchstr(system('asdf current ruby'), '\v\d+\.\d+\.\d+')
-  else
-    return
+  let ver = $ASDF_RUBY_VERSION
+
+  if empty(ver)
+    for line in readfile(fnamemodify('~/.tool-versions', ':p'))
+      if line =~# 'ruby'
+        let ver = matchstr(line, '\v\d+\.\d+\.\d+')
+        break
+      endif
+    endfor
   endif
+
+  if empty(ver)
+    let ver = asdf_ruby#ruby_version('~')
+  endif
+
   if has_key(g:ruby_version_paths, ver)
     let g:ruby_default_path = g:ruby_version_paths[ver]
   else
